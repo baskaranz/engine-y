@@ -14,12 +14,14 @@ pipeline {
     }
     stage('Initialize'){
       steps {
-        def dockerHome = tool 'myDocker'
-        env.PATH = "${dockerHome}/bin:${env.PATH}"
+        script {
+          def dockerHome = tool 'myDocker'
+          env.PATH = "${dockerHome}/bin:${env.PATH}"          
+        }
       }
     }    
     stage('Check docker version') {
-      steps{
+      steps {
         sh "docker version"
       }
     }    
