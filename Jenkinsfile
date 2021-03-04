@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "baskaranz/nginx"
+    imagename = "beswaran/nginx"
     registryCredential = 'dockerhub'
     dockerImage = ''
   }
