@@ -1,34 +1,23 @@
 pipeline {
   environment {
-    imagename = "beswaran/nginx"
+    imageName = 'beswaran/nginx'
     registryCredential = 'dockerhub'
+    registryUrl = 'https://registry.hub.docker.com'
+    repositoryCredential = 'github'
+    repositoryUrl = 'https://github.com/baskaranz/engine-y.git'
     dockerImage = ''
   }
   agent any
   stages {
     stage('Cloning Git') {
       steps {
-        git([url: 'https://github.com/baskaranz/engine-y.git', branch: 'master', credentialsId: 'github'])
-
-      }
-    }
-    stage('Initialize'){
-      steps {
-        script {
-          def dockerHome = tool 'myDocker'
-          env.PATH = "${dockerHome}/bin:${env.PATH}"          
-        }
-      }
-    }    
-    stage('Check docker version') {
-      steps {
-        sh "docker version"
+        git([url: repositoryUrl, branch: 'master', credentialsId: repositoryCredential])
       }
     }
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build imagename + ":$BUILD_NUMBER"
+          dockerImage = docker.build imageName + ":$BUILD_NUMBER"
         }
       }
     }
@@ -37,6 +26,7 @@ pipeline {
         script {
           docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
             dockerImage.push()
+            dockerImage.push('latest')
           }
         }
       }
