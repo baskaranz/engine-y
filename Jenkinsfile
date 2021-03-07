@@ -9,17 +9,27 @@ pipeline {
   }
   agent any
   stages {
-    stage('Run latest container') {
-        if (env.BRANCH_NAME == 'master') {
-            echo 'Master branch initiating build'
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
-                        sh "docker version"
-                    }
-                }
-            }
+    stage('Cloning Git') {
+      steps {
+        git([url: repositoryUrl, branch: 'master', credentialsId: repositoryCredential])
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build imageName + ":$BUILD_NUMBER"
         }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
+            dockerImage.push()
+            dockerImage.push('latest')
+          }
+        }
+      }
     }
   }
 }
