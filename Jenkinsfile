@@ -9,24 +9,11 @@ pipeline {
   }
   agent any
   stages {
-    stage('Cloning Git') {
-      steps {
-        git([url: repositoryUrl, branch: 'master', credentialsId: repositoryCredential])
-      }
-    }
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build imageName + ":$BUILD_NUMBER"
-        }
-      }
-    }
-    stage('Deploy Image') {
+    stage('Run latest container') {
       steps{
         script {
           docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push()
-            dockerImage.push('latest')
+            sh "docker run -p 80:80 -d ${imageName}:latest"
           }
         }
       }
