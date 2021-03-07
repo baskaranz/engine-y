@@ -13,7 +13,7 @@ pipeline {
       steps{
         script {
           docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
-            sh "docker run -p 80:80 -d ${imageName}:latest"
+            sh "docker version"
           }
         }
       }
