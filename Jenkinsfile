@@ -10,13 +10,16 @@ pipeline {
   agent any
   stages {
     stage('Run latest container') {
-      steps{
-        script {
-          docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
-            sh "docker version"
-          }
+        if (env.BRANCH_NAME == 'master') {
+            echo 'Master branch initiating build'
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', registryCredential ) {
+                        sh "docker version"
+                    }
+                }
+            }
         }
-      }
     }
   }
 }
